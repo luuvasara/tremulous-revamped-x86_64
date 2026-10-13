@@ -2,7 +2,7 @@
 # build_release.sh - one command from an upstream checkout to the release zip(s).
 #
 #   tools/build_release.sh [--src DIR] [--out DIR] [--godot BIN] [--sfx-hd DIR]
-#                          [--combined] [--windows-dll FILE] [--glibc 2.28]
+#                          [--combined] [--windows-dll FILE | --windows-mingw] [--glibc 2.28]
 #
 # Builds libtrem_godot.so against an OLD glibc (default 2.28) with zig cc as C
 # compiler and linker (no containers, no root), exports the game with Godot's
@@ -16,15 +16,18 @@
 # Needs: cargo (rust >= the workspace rust-version), python3, git, a Godot
 # EDITOR and the matching export templates (same version as upstream's release
 # uses: see EXPECT_GODOT below), pip3 (only to fetch zig when ZIG is unset).
-# --combined also needs the "Windows Desktop" template and either --windows-dll
-# or x86_64-w64-mingw32-gcc plus the x86_64-pc-windows-gnu rust target.
+# --combined also needs the "Windows Desktop" template. Its Windows library is
+# the trem_godot.dll committed in godot/bin (upstream's own MSVC build, so the
+# Windows half equals upstream's release zip); --windows-dll FILE uses another,
+# --windows-mingw cross-builds it (needs x86_64-w64-mingw32-gcc and the
+# x86_64-pc-windows-gnu rust target).
 #
 # Environment: GODOT (editor binary), ZIG (zig binary), SOURCE_DATE_EPOCH.
 set -euo pipefail
 
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 SRC=$(cd "$HERE/.." && pwd)
-OUT=""; GODOT=${GODOT:-godot}; SFX=""; COMBINED=0; WINDLL=""; GLIBC=2.28
+OUT=""; GODOT=${GODOT:-godot}; SFX=""; COMBINED=0; WINDLL=""; MINGW=0; GLIBC=2.28
 EXPECT_GODOT="4.7.2.stable"   # upstream's v1.0 Windows exe is the 4.7.2 template
 while [ $# -gt 0 ]; do
   case $1 in
@@ -34,6 +37,7 @@ while [ $# -gt 0 ]; do
     --sfx-hd) SFX=$(cd "$2" && pwd); shift;;
     --combined) COMBINED=1;;
     --windows-dll) WINDLL=$(readlink -f "$2"); shift;;
+    --windows-mingw) MINGW=1;;
     --glibc) GLIBC=$2; shift;;
     -h|--help) sed -n '2,22p' "$0"; exit 0;;
     *) echo "unknown option $1" >&2; exit 2;;
@@ -95,6 +99,10 @@ LX=$W/export-linux; mkdir -p "$LX"
 echo "== export Linux"; "$GODOT" --headless --path "$P" --export-release Linux "$LX/Tremulous.x86_64" >"$W/export-linux.log" 2>&1
 [ -x "$LX/Tremulous.x86_64" ] && [ -f "$LX/Tremulous.pck" ] || { tail -20 "$W/export-linux.log"; die "Linux export failed"; }
 if [ $COMBINED = 1 ]; then
+  if [ -z "$WINDLL" ] && [ $MINGW = 0 ]; then WINDLL=$W/trem_godot.dll
+    # the committed blob, not the working-tree file (local builds overwrite that one)
+    git -C "$SRC" show HEAD:godot/bin/trem_godot.dll > "$WINDLL" 2>/dev/null || cp "$SRC/godot/bin/trem_godot.dll" "$WINDLL"
+    echo "== Windows library: godot/bin/trem_godot.dll as committed"; fi
   if [ -z "$WINDLL" ]; then
     echo "== cargo build (windows-gnu, mingw)"
     ( cd "$SRC"
@@ -105,6 +113,8 @@ if [ $COMBINED = 1 ]; then
       cargo build --release --target x86_64-pc-windows-gnu -p trem_godot --target-dir "$OUT/target-win" )
     WINDLL=$OUT/target-win/x86_64-pc-windows-gnu/release/trem_godot.dll
   fi
+  [ -f "$WINDLL" ] || die "no Windows library at $WINDLL"
+  echo "windows library sha256 $(sha256sum "$WINDLL" | cut -d' ' -f1)"
   cp "$WINDLL" "$P/bin/trem_godot.dll"
   WX=$W/export-win; mkdir -p "$WX"
   echo "== export Windows Desktop"; "$GODOT" --headless --path "$P" --export-release "Windows Desktop" "$WX/Tremulous.exe" >"$W/export-win.log" 2>&1

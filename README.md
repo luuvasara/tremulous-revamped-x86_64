@@ -51,9 +51,7 @@ What it does, in order:
 You need: Rust (the workspace `rust-version`), Python 3, pip, a **Godot 4.7.2 editor** (`GODOT=...`)
 and the **4.7.2 export templates** installed (Linux release template; for `--combined` also the
 Windows release template). Upstream's v1.0 Windows exe is the 4.7.2 template, which is why the same
-version is used here. For `--combined` the Windows library is cross-built with mingw
-(`x86_64-w64-mingw32-gcc` and the `x86_64-pc-windows-gnu` Rust target) unless you pass
-`--windows-dll FILE`. `--sfx-hd DIR` adds upstream's `sfx_hd/` folder (derived sound data that is not in
+version is used here. For `--combined` the Windows library is upstream's own `trem_godot.dll` as committed in `godot/bin/` (so the Windows half equals upstream's Windows zip, file for file, except the README); `--windows-dll FILE` uses another one and `--windows-mingw` cross-builds it (`x86_64-w64-mingw32-gcc` and the `x86_64-pc-windows-gnu` Rust target). `--sfx-hd DIR` adds upstream's `sfx_hd/` folder (derived sound data that is not in
 git: copy it from upstream's Windows zip).
 
 `tools/test-matrix.sh ZIP` runs the zip headless in distro containers against a dedicated server on a
