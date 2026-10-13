@@ -1,0 +1,77 @@
+# Tremulous Revamped: Linux build kit
+
+This repository builds a **Linux x86_64 release zip** of
+[Tremulous Revamped](https://github.com/MeepingsCorner/Tremulous-Revamped), laid out like
+upstream's Windows zip, and optionally a **combined zip** that runs on both Windows and Linux.
+
+**Upstream is the real home.** This kit exists only so Linux players have a download until
+upstream publishes Linux builds itself. **It stops when upstream releases Linux builds**: at that
+point use theirs. Nothing here changes the game: it builds the plain upstream commit.
+Everything is meant to be merged into upstream; fork it, copy it, or send it on.
+
+## What you get
+
+| File | Contents |
+|---|---|
+| `Tremulous-Revamped-linux-x86_64.zip` | `Tremulous-Revamped/` with `Tremulous.x86_64`, `Tremulous.pck`, `libtrem_godot.so`, `base/`, optional `sfx_hd/`, `README-LINUX.txt` |
+| `Tremulous-Revamped-win64-linux-x86_64.zip` (`--combined`) | the same folder holding Windows and Linux files side by side: one `base/`, one `Tremulous.pck`, `Tremulous.exe` + DLLs and `Tremulous.x86_64` + `.so` |
+
+Unzip anywhere, run `Tremulous.x86_64` (or `Tremulous.exe`). The optional 4K `hd` folder goes next
+to the executable, as on Windows.
+
+Requirements: 64-bit Linux, **glibc 2.28 or newer** (Ubuntu 18.10+, Debian 10+, Fedora 29+,
+RHEL/Rocky 8+, Arch, SteamOS), a Vulkan 1.1 or OpenGL 3.3 driver, X11 or Wayland. Sound is Godot's
+own audio: FMOD and Steam Audio exist only for Windows.
+
+## Why a kit and not just a binary
+
+The `libtrem_godot.so` committed in upstream's `godot/bin/` needs glibc 2.34 (it was built on a
+current distro), so it fails on older systems. Building the game library against an old glibc fixes
+that. The Godot Linux engine binary (official export template) already needs only glibc 2.28.
+
+## Build it yourself (one command)
+
+```sh
+git clone https://github.com/MeepingsCorner/Tremulous-Revamped
+tools/build_release.sh --src Tremulous-Revamped --out out            # Linux zip
+tools/build_release.sh --src Tremulous-Revamped --out out --combined # plus the Windows+Linux zip
+```
+
+What it does, in order:
+
+1. fetches [zig](https://ziglang.org) with pip if you have none (`ZIG=/path/to/zig` to use yours),
+   used only as the C compiler and linker, targeting `x86_64-linux-gnu.2.28`;
+2. `cargo build --release --target x86_64-unknown-linux-gnu -p trem_godot` with path remapping, so no
+   local path ends up in the library; checks `objdump -T` for the highest `GLIBC_` symbol;
+3. copies the project to a staging folder (your checkout stays untouched), adds the `Linux` export
+   preset from `presets/linux-preset.cfg` if the project has none, imports and exports with Godot;
+4. writes the zip(s) reproducibly (sorted names, fixed times from the commit date, fixed modes,
+   `+x` on the executables) and `SHA256SUMS.txt`.
+
+You need: Rust (the workspace `rust-version`), Python 3, pip, a **Godot 4.7.2 editor** (`GODOT=...`)
+and the **4.7.2 export templates** installed (Linux release template; for `--combined` also the
+Windows release template). Upstream's v1.0 Windows exe is the 4.7.2 template, which is why the same
+version is used here. For `--combined` the Windows library is cross-built with mingw
+(`x86_64-w64-mingw32-gcc` and the `x86_64-pc-windows-gnu` Rust target) unless you pass
+`--windows-dll FILE`. `--sfx-hd DIR` adds upstream's `sfx_hd/` folder (derived sound data that is not in
+git: copy it from upstream's Windows zip).
+
+`tools/test-matrix.sh ZIP` runs the zip headless in distro containers against a dedicated server on a
+network with no outside access, and prints PASS/FAIL per image.
+
+## Moving it into upstream
+
+The kit is three small pieces, each meant to land in upstream unchanged:
+
+- the `Linux` preset (`presets/linux-preset.cfg`) appended to `godot/export_presets.cfg`;
+- `tools/build_release.sh` (+ `tools/zig-cc-wrapper.sh`, `tools/README-LINUX.txt.in`, `tools/README-BOTH.txt.in`)
+  next to `tools/build_release.ps1`; with the preset committed, the script skips the append and
+  `--src` defaults to the repository root;
+- a README section ("Play on Linux") pointing at the Linux zip.
+
+To use this repository as a fork base: clone upstream, copy `tools/` and `presets/` in, commit.
+
+## Licence
+
+GPL-2.0-or-later, like upstream's code (`LICENSE`). The game data in `base/` has its own terms: see
+`base/COPYING` and `base/CC` inside the zip.
