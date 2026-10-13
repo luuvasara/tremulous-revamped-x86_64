@@ -82,3 +82,5 @@ To use this repository as a fork base: clone upstream, copy `tools/` and `preset
 
 GPL-2.0-or-later, like upstream's code (`LICENSE`). The game data in `base/` has its own terms: see
 `base/COPYING` and `base/CC` inside the zip.
+
+Disclosure: this kit was prepared with AI assistance; the builds and tests were run and checked by the contributors.
