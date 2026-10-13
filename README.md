@@ -2,7 +2,7 @@
 
 This repository builds a **Linux x86_64 release zip** of
 [Tremulous Revamped](https://github.com/MeepingsCorner/Tremulous-Revamped), laid out like
-upstream's Windows zip, and optionally a **combined zip** that runs on both Windows and Linux.
+upstream's Windows zip, and it merges with upstream's Windows zip into one folder that runs on both systems.
 
 **Upstream is the real home.** This kit exists only so Linux players have a download until
 upstream publishes Linux builds itself. **It stops when upstream releases Linux builds**: at that
@@ -11,13 +11,22 @@ Everything is meant to be merged into upstream; fork it, copy it, or send it on.
 
 ## What you get
 
-| File | Contents |
-|---|---|
-| `Tremulous-Revamped-linux-x86_64.zip` | `Tremulous-Revamped/` with `Tremulous.x86_64`, `Tremulous.pck`, `libtrem_godot.so`, `base/`, optional `sfx_hd/`, `README-LINUX.txt` |
-| `Tremulous-Revamped-win64-linux-x86_64.zip` (`--combined`) | the same folder holding Windows and Linux files side by side: one `base/`, one `Tremulous.pck`, `Tremulous.exe` + DLLs and `Tremulous.x86_64` + `.so` |
+The release is one file, `Tremulous-Revamped-linux-x86_64.zip`: the folder `Tremulous-Revamped/` with
+`Tremulous.x86_64`, `Tremulous.pck`, `libtrem_godot.so`, `base/`, optional `sfx_hd/` and
+`README-LINUX.txt`. Unzip anywhere, run `./Tremulous.x86_64`. The optional 4K `hd` folder goes next to
+the executable, as on Windows.
 
-Unzip anywhere, run `Tremulous.x86_64` (or `Tremulous.exe`). The optional 4K `hd` folder goes next
-to the executable, as on Windows.
+**It is built to merge with upstream's Windows zip**: same top-level folder, and every file that exists in
+both zips (`Tremulous.pck`, `base/`, `sfx_hd/`: 230 files against upstream's v1.0 Windows zip) is
+byte-identical. Unzip both into one folder, in either order, and nothing changes; you get one folder that
+runs on Windows (`Tremulous.exe`) and Linux (`Tremulous.x86_64`). The Linux zip has no `README.txt` (the
+Windows zip's one stays); the Linux notes are in `README-LINUX.txt`. `tools/merge-check.sh WIN_ZIP LINUX_ZIP`
+proves this for any pair of zips (both extraction orders, content hashes, overlap and Linux-only lists).
+We do not release a Windows or combined build: Windows stays upstream's.
+
+For upstream's own use, `--combined` (off by default) builds one zip that already holds both systems
+(`Tremulous-Revamped-win64-linux-x86_64.zip`, the Windows library taken from the committed
+`godot/bin/trem_godot.dll`).
 
 Requirements: 64-bit Linux, **glibc 2.28 or newer** (Ubuntu 18.10+, Debian 10+, Fedora 29+,
 RHEL/Rocky 8+, Arch, SteamOS), a Vulkan 1.1 or OpenGL 3.3 driver, X11 or Wayland. Sound is Godot's
@@ -34,7 +43,7 @@ that. The Godot Linux engine binary (official export template) already needs onl
 ```sh
 git clone https://github.com/MeepingsCorner/Tremulous-Revamped
 tools/build_release.sh --src Tremulous-Revamped --out out            # Linux zip
-tools/build_release.sh --src Tremulous-Revamped --out out --combined # plus the Windows+Linux zip
+tools/build_release.sh --src Tremulous-Revamped --out out --combined # optional: also a Windows+Linux zip
 ```
 
 What it does, in order:
