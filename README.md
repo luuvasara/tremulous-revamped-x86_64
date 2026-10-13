@@ -14,7 +14,8 @@ Everything is meant to be merged into upstream; fork it, copy it, or send it on.
 The release is one file, `Tremulous-Revamped-linux-x86_64.zip`: the folder `Tremulous-Revamped/` with
 `Tremulous.x86_64`, `Tremulous.pck`, `libtrem_godot.so`, `base/`, optional `sfx_hd/` and
 `README-LINUX.txt`. Unzip anywhere, run `./Tremulous.x86_64`. The optional 4K `hd` folder goes next to
-the executable, as on Windows.
+the executable, as on Windows (the game looks for it there on every system; not yet tried with this
+Linux build).
 
 **It is built to merge with upstream's Windows zip**: same top-level folder, and every file that exists in
 both zips (`Tremulous.pck`, `base/`, `sfx_hd/`: 230 files against upstream's v1.0 Windows zip) is
