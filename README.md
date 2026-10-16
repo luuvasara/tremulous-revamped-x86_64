@@ -23,7 +23,7 @@ folder goes next to the programs, as in the official release.
 
 ## What is in it
 
-Each release lists the pull requests it contains, with links. Our pull requests to upstream:
+Each release lists what it contains: upstream's code plus our changes, most of them sent upstream as pull requests. Our pull requests to upstream:
 https://github.com/MeepingsCorner/Tremulous-Revamped/pulls?q=is%3Apr+author%3Aluuvasara
 
 ## Where the files come from
@@ -37,7 +37,7 @@ https://github.com/MeepingsCorner/Tremulous-Revamped/pulls?q=is%3Apr+author%3Alu
 
 ## Source
 
-The exact source of every build is the branch or tag named in its release notes, in this repository.
+Each release names the exact source commit it was built from; see its release notes for where that source is published.
 The build kit used for the Linux part is described in [README-kit.md](README-kit.md).
 
 ## Licence
