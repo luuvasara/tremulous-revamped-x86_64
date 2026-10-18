@@ -10,16 +10,16 @@ merged or released them, this repository stops; nothing here is meant to replace
 ## Download and start
 
 Get `Tremulous-Revamped-win64-linux-x86_64.zip` from the newest pre-release under
-[Releases](../../releases), check it against `SHA256SUMS.txt`, unzip it anywhere, then:
+[Releases](../../releases), check it against `SHA256SUMS.txt`, then unzip it into a new, empty folder, so old leftovers can't mix in. Then:
 
 | System | Start |
 |---|---|
-| Windows 10/11 (64-bit) | double-click **`Tremulous-Windows.exe`** |
-| Linux x86_64 (glibc 2.28 or newer) | run **`./Tremulous-Linux.x86_64`** |
+| Windows 10/11 (64-bit) | double-click **`Tremulous.exe`** |
+| Linux x86_64 (glibc 2.28 or newer) | run **`./Tremulous.x86_64`** |
 
-Both share `base/` and `sfx_hd/`. Godot loads the game file named like the program, so the small
-`Tremulous-Windows.pck` / `Tremulous-Linux.pck` (the same file) is there twice. The optional 4K `hd`
-folder goes next to the programs, as in the official release.
+Both programs load the one game file `Tremulous.pck` and share `base/` and `sfx_hd/`. The optional
+4K `hd` folder goes next to the programs, as in the official release. (Builds up to evolve-6b used
+the names `Tremulous-Windows.exe` / `Tremulous-Linux.x86_64` with two `.pck` files.)
 
 ## What is in it
 
@@ -30,8 +30,8 @@ https://github.com/MeepingsCorner/Tremulous-Revamped/pulls?q=is%3Apr+author%3Alu
 
 | File | Source |
 |---|---|
-| `Tremulous-Windows.exe` | Godot 4.7.2's official signed Windows executable, renamed (unchanged bytes; sha256 in the release) |
-| `Tremulous-Linux.x86_64` | Godot 4.7.2's official Linux export template, renamed |
+| `Tremulous.exe` | Godot 4.7.2's official signed Windows executable (the editor build, which runs the game from `Tremulous.pck`), renamed, unchanged bytes; sha256 in the release |
+| `Tremulous.x86_64` | Godot 4.7.2's official Linux export template, renamed |
 | `trem_godot.dll`, `libtrem_godot.so`, `*.pck` | built from the source branch named in the release |
 | audio DLLs, `base/`, `sfx_hd/` | unchanged from the official Tremulous Revamped release |
 
