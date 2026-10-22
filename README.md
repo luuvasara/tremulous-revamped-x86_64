@@ -31,9 +31,13 @@ https://github.com/MeepingsCorner/Tremulous-Revamped/pulls?q=is%3Apr+author%3Alu
 | File | Source |
 |---|---|
 | `Tremulous.exe` | Godot 4.7.2's official signed Windows executable (the editor build, which runs the game from `Tremulous.pck`), renamed, unchanged bytes; sha256 in the release |
+| `Tremulous.console.exe` | Godot 4.7.2's official signed Windows console launcher, unchanged bytes (since evolve-10); only the Windows dedicated-server script uses it |
 | `Tremulous.x86_64` | Godot 4.7.2's official Linux export template, renamed |
 | `trem_godot.dll`, `libtrem_godot.so`, `*.pck` | built from the source branch named in the release |
 | audio DLLs, `base/`, `sfx_hd/` | unchanged from the official Tremulous Revamped release |
+
+Since evolve-10 the zip also holds a dedicated-server kit: `Server-Tremulous-Windows.bat`, `Server-Tremulous-Linux.sh`,
+`Server-Tremulous.cfg` and Docker files (text files written by us; read them before running).
 
 ## Source
 
