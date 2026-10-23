@@ -9,7 +9,7 @@ merged or released them, this repository stops; nothing here is meant to replace
 
 ## Download and start
 
-Get `Tremulous-Revamped-win64-linux-x86_64.zip` from the newest pre-release under
+Get the newest pre-release zip (named like `Tremulous_Revamped-win64_linux_x86_64-evolve_10.zip`; the build is also in `VERSION.txt` inside) from
 [Releases](../../releases), check it against `SHA256SUMS.txt`, then unzip it into a new, empty folder, so old leftovers can't mix in. Then:
 
 | System | Start |
